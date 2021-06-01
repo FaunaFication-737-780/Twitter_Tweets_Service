@@ -5,21 +5,38 @@
     <title>Tweet Stream</title>
 </head>
 <body>
-    <h1>Hello</h1>
+<h1>Hello I'm in Other Directory</h1>
+<div id="tweet_stream"></div>
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
-            integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        const socket = io()
-        socket.on('connect',()=>{
-            console.log('Server is connected..')
-        })
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const socket = io()
+    const tweet_stream = document.getElementById('tweet_stream')
+    socket.on('connect',()=>{
+        console.log('Server is connected to new one..')
+    })
 
-        socket.on('Tweet',(Tweet)=>{
-            console.log(Tweet)
-        })
-    </script>
+    socket.on('TweetData',(Tweet)=>{
+        const tweetData = {
+            id: Tweet.data.id,
+            text: Tweet.data.text,
+            username: `@${Tweet.includes.users[0].username}`
+        }
+        const tweetEl = document.createElement('div')
+        tweetEl.className = 'card'
+        tweetEl.innerHTML = `
+            <div><h4> ${tweetData.username} </h4></div>
+            <div><h5> ${tweetData.text} </h5></div>
+        `
+        tweet_stream.appendChild(tweetEl)
+    })
+
+    socket.on('disconnect', () => {
+        console.log('Server is disconnected');
+    })
+</script>
 </body>
 </html>
