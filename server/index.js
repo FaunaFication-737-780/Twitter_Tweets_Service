@@ -5,17 +5,15 @@ const socketIo = require('socket.io');
 const needle = require('needle');
 const config = require('dotenv').config();
 const TOKEN = process.env.TWITTER_BEARER_TOKEN;
-const PORT = process.env.PORT || 3000;
-
+const PORT = process.env.PORT || 3004;
 const app = express();
-
+const bodyparser = require('body-parser')
+const request = require('request');
 const server = http.createServer(app);
 const io = socketIo(server);
 
-app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../', 'public', 'index.html'));
-});
 
+app.use(bodyparser.json())
 const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules';
 // eslint-disable-next-line max-len
 const streamURL = 'https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id';
@@ -73,7 +71,7 @@ async function deleteRules(rules) {
     return response.body;
 }
 
-function streamTweets(socket) {
+function streamTweets() {
     const stream = needle.get(streamURL, {
         headers: {
             Authorization: `Bearer ${TOKEN}`,
@@ -83,38 +81,42 @@ function streamTweets(socket) {
     stream.on('data', (data) => {
         try {
             const json = JSON.parse(data);
-            // console.log(json);
-            socket.emit('TweetData', json);
+            //console.log(json);
+            //socket.emit('TweetData', json);
+            const headersOpt = {
+                "content-type": "application/json",
+            };
+            request({
+                method: 'post',
+                url: 'http://localhost:3000/Tweet',
+                form: json,
+                headers: headersOpt,
+                json: true,
+            }, function (error, response, body) {
+                //Print the Response
+                console.log(body);
+            });
         } catch (error) {}
     });
 
     return stream;
 }
 
-io.on('connection', async(socket) => {
-    console.log('Client connected...');
+let currentRules;
 
-    let currentRules;
+try {
+    //   Get all stream rules
+    currentRules = getRules();
 
-    try {
-        //   Get all stream rules
-        currentRules = await getRules();
+    // Delete all stream rules
+    deleteRules(currentRules);
 
-        // Delete all stream rules
-        await deleteRules(currentRules);
-
-        // Set rules based on array above
-        await setRules();
-    } catch (error) {
-        console.error(error);
-        process.exit(1);
-    }
-    streamTweets(io);
-    socket.on('disconnect', () => {
-        console.log('Client is disconnected..');
-        process.exit(1);
-    });
-});
-
+    // Set rules based on array above
+    setRules();
+} catch (error) {
+    console.error(error);
+    process.exit(1);
+}
+streamTweets();
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
