@@ -96,27 +96,49 @@ function streamTweets() {
                 //Print the Response
                 console.log(body);
             });
+            /*request({
+                method: 'post',
+                url: 'https://whydidyoubreaktoday-sleepy-eland.mybluemix.net/Tweet',
+                form: json,
+                headers: headersOpt,
+                json: true,
+            }, function (error, response, body) {
+                //Print the Response
+                console.log(body);
+            });
+            request({
+                method: 'post',
+                url: 'https://animals-in-australia.us-south.cf.appdomain.cloud/Tweet',
+                form: json,
+                headers: headersOpt,
+                json: true,
+            }, function (error, response, body) {
+                //Print the Response
+                console.log(body);
+            });*/
         } catch (error) {}
     });
 
     return stream;
 }
+(async function (){
+    let currentRules;
 
-let currentRules;
+    try {
+        //   Get all stream rules
+        currentRules = await getRules();
 
-try {
-    //   Get all stream rules
-    currentRules = getRules();
+        // Delete all stream rules
+        await deleteRules(currentRules);
 
-    // Delete all stream rules
-    deleteRules(currentRules);
+        // Set rules based on array above
+        await setRules();
+    } catch (error) {
+        console.error(error);
+        process.exit(1);
+    }
+    streamTweets();
+})();
 
-    // Set rules based on array above
-    setRules();
-} catch (error) {
-    console.error(error);
-    process.exit(1);
-}
-streamTweets();
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
