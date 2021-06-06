@@ -18,7 +18,7 @@ const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules';
 // eslint-disable-next-line max-len
 const streamURL = 'https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id';
 
-const rules = [{ value: 'Biodiversity' }];
+const rules = [{ value: 'Biodiversity in Australia' }];
 
 // Get stream rules
 async function getRules() {
@@ -86,7 +86,7 @@ function streamTweets() {
             const headersOpt = {
                 "content-type": "application/json",
             };
-            request({
+            /*request({
                 method: 'post',
                 url: 'http://localhost:3000/Tweet',
                 form: json,
@@ -95,8 +95,8 @@ function streamTweets() {
             }, function (error, response, body) {
                 //Print the Response
                 console.log(body);
-            });
-            /*request({
+            });*/
+            request({
                 method: 'post',
                 url: 'https://whydidyoubreaktoday-sleepy-eland.mybluemix.net/Tweet',
                 form: json,
@@ -115,7 +115,7 @@ function streamTweets() {
             }, function (error, response, body) {
                 //Print the Response
                 console.log(body);
-            });*/
+            });
         } catch (error) {}
     });
 
