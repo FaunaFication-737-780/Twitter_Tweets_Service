@@ -13,20 +13,12 @@
         integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-    const socket = io("http://localhost",{
-        port: 3000,
-        path: '/tweets',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
     const tweet_stream = document.getElementById('tweet_stream')
     socket.on('connect',()=>{
         console.log('Server is connected to new one..')
     })
 
-    socket.on('tweets',(Tweet)=>{
+    socket.on('TweetData',(Tweet)=>{
         const tweetData = {
             id: Tweet.data.id,
             text: Tweet.data.text,

@@ -12,6 +12,10 @@ const request = require('request');
 const server = http.createServer(app);
 const io = socketIo(server);
 
+app.get('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../', 'client', 'index.html'));
+});
+
 app.use(bodyparser.json());
 const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules';
 // eslint-disable-next-line max-len
@@ -82,7 +86,7 @@ function streamTweets() {
     try {
       const json = JSON.parse(data);
       //console.log(json);
-      //socket.emit('TweetData', json);
+      socket.emit('TweetData', json);
       const headersOpt = {
         'content-type': 'application/json',
       };
