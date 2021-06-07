@@ -85,7 +85,7 @@ function streamTweets(socket) {
   stream.on('data', (data) => {
     try {
       const json = JSON.parse(data);
-      console.log(json);
+      //console.log(json);
       socket.emit('TweetData', json);
       const headersOpt = {
         'content-type': 'application/json',
